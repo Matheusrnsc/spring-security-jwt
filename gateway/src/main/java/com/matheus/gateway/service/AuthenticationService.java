@@ -28,6 +28,9 @@ public class AuthenticationService {
         if(username.equals(myusername) && password.equals(mypassword)){
             return jwtService.generateToken(username, "ROLE_ADMIN");
         }
+        if(username.equals("user") && password.equals("user")){
+            return jwtService.generateToken(username, "ROLE_USER");
+        }
         throw new IllegalArgumentException("Invalid credentials");
     }
     

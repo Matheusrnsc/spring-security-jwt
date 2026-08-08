@@ -19,6 +19,7 @@ public class OrderClient {
         return restClient
                 .get()
                 .uri("http://localhost:8081/api/orders")
+                .header("X-Gateway-Authenticated", "true")
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<String>>() {});
     }
