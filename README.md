@@ -1,30 +1,37 @@
 # Spring Security JWT
 
-Projeto desenvolvido como desafio final do módulo de Spring Security da ADA.
+Projeto desenvolvido para demonstrar a implementação de autenticação e autorização utilizando **Spring Security** e **JWT** em uma arquitetura baseada em microsserviços.
 
-O objetivo do projeto é implementar autenticação e autorização utilizando JWT em uma arquitetura de microsserviços composta por um API Gateway e um Order Service.
+O sistema é composto por um **API Gateway**, responsável pela autenticação dos usuários, e um **Order Service**, que disponibiliza recursos protegidos e aceita apenas requisições encaminhadas pelo Gateway.
 
 ---
 
 ## Arquitetura
 
-```
-Cliente
-    │
-    ▼
-API Gateway (8080)
-    │
-    ├── Autenticação
-    ├── Geração do JWT
-    ├── Validação do JWT
-    ├── Controle de Roles
-    │
-    ▼
-Order Service (8081)
-    │
-    ├── Validação de requisições vindas do Gateway
-    ▼
-Recursos protegidos
+```text
+                +--------------------+
+                |      Cliente       |
+                +--------------------+
+                          |
+                          | POST /login
+                          ▼
+                +--------------------+
+                |      Gateway       |
+                |--------------------|
+                | Authentication     |
+                | JWT Validation     |
+                | Role Validation    |
+                +--------------------+
+                          |
+          X-Gateway-Authenticated
+                          |
+                          ▼
+                +--------------------+
+                |   Order Service    |
+                |--------------------|
+                | Gateway Filter     |
+                | Protected API      |
+                +--------------------+
 ```
 
 ---
@@ -36,57 +43,31 @@ Recursos protegidos
 - Spring Security
 - JWT (JSON Web Token)
 - Maven
-- REST API
+- REST APIs
 
 ---
 
 ## Funcionalidades
 
-- Login utilizando usuário e senha
-- Geração de JWT
-- Validação de Token
-- Autenticação baseada em JWT
+- Autenticação com usuário e senha
+- Geração e validação de JWT
 - Autorização baseada em Roles (RBAC)
+- Filtro personalizado de autenticação
 - API Gateway protegendo os microsserviços
-- Filtro personalizado para validação do JWT
-- Filtro interno para aceitar apenas requisições provenientes do Gateway
+- Comunicação entre microsserviços utilizando `RestClient`
+- Proteção contra acesso direto ao Order Service
 
 ---
 
-## Estrutura do projeto
+## Fluxo da autenticação
 
-```
-spring-security-jwt
-│
-├── gateway
-│   ├── Authentication
-│   ├── JWT
-│   ├── Security Filter
-│   └── API Gateway
-│
-└── order-service
-    ├── OrderController
-    ├── GatewayAuthenticationFilter
-    └── Security Configuration
-```
-
----
-
-## Fluxo de autenticação
-
-1. O cliente realiza login.
-
+1. O cliente realiza o login.
 2. O Gateway valida as credenciais.
-
-3. Um JWT é gerado.
-
+3. Um JWT é gerado e retornado ao cliente.
 4. O cliente envia o token nas próximas requisições.
-
-5. O Gateway valida o JWT.
-
-6. Caso o token seja válido, a requisição é encaminhada ao Order Service.
-
-7. O Order Service aceita apenas requisições autenticadas pelo Gateway.
+5. O Gateway valida o JWT e as permissões do usuário.
+6. A requisição é encaminhada ao Order Service.
+7. O Order Service aceita apenas chamadas provenientes do Gateway.
 
 ---
 
@@ -94,11 +75,9 @@ spring-security-jwt
 
 ### Login
 
-```
+```http
 POST /api/auth/login
 ```
-
-Exemplo:
 
 ```json
 {
@@ -111,31 +90,47 @@ Exemplo:
 
 ### Listar pedidos
 
-```
+```http
 GET /api/orders
-```
-
-Header obrigatório:
-
-```
 Authorization: Bearer <JWT>
 ```
 
 ---
 
-## Segurança implementada
+## Como executar
 
-- JWT Authentication
-- JWT Validation
-- Spring Security Filter Chain
-- Security Context
-- Role Based Access Control (RBAC)
-- API Gateway
-- Comunicação entre microsserviços
-- Proteção contra acesso direto ao Order Service
+Clone o repositório:
+
+```bash
+git clone https://github.com/Matheusrnsc/spring-security-jwt.git
+```
+
+Inicie os dois microsserviços:
+
+- Gateway → `localhost:8080`
+- Order Service → `localhost:8081`
+
+Realize o login para obter um JWT e utilize o token nas chamadas ao Gateway.
 
 ---
 
-## Autor
+## O que aprendi
 
-Matheus Rocha
+- Spring Security
+- JWT Authentication
+- Security Filter Chain
+- OncePerRequestFilter
+- Role Based Access Control (RBAC)
+- API Gateway
+- Comunicação entre microsserviços
+- Separação de responsabilidades entre serviços
+
+---
+
+## Próximas melhorias
+
+- Persistência de usuários em banco de dados
+- Criptografia de senhas com BCrypt
+- Refresh Token
+- Testes automatizados
+- Docker
