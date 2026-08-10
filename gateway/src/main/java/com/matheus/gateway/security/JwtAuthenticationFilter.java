@@ -32,10 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        System.out.println("JwtAuthenticationFilter: doFilterInternal called");
 
         String authHeader = request.getHeader("Authorization");
-        System.out.println("JwtAuthenticationFilter: Authorization header = " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -43,10 +41,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        System.out.println("JwtAuthenticationFilter: Extracted token = " + token);
+
 
         
-        System.out.println("JwtAuthenticationFilter: Valid token? " + jwtService.validateToken(token));
+    
         if (!jwtService.validateToken(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;

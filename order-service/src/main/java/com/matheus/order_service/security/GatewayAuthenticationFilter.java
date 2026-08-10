@@ -18,8 +18,6 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
                 
                 String gatewayHeader = request.getHeader("X-Gateway-Authenticated");
-                System.out.println("GatewayAuthenticationFilter executado");
-                System.out.println("Header = " + gatewayHeader);
                 if (gatewayHeader == null || !gatewayHeader.equals("true")) {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Forbidden: Request must come through the gateway");
                     return;
